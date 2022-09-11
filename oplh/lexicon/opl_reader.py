@@ -26,15 +26,11 @@ class OpLexicon(dict):
 
                     data = OplData(key=word, pos=KeyTypes(pos), pol=int(pol), input_type=InputTypes(input_type))
                     self.keys.add(data.key)
-                    self[data.key] = list(data)
+                    self[data.key] = data
                 except Exception as e:
                     raise IOError(f"Error parsing the file on line: {line}\nError: {str(e)}")
 
             line = f.readline().strip()
 
         f.close()
-
-
-if __name__ == '__main__':
-    opl = singleton(lambda: OpLexicon())
 
