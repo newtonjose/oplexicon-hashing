@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Set
+from datetime import datetime
+from typing import Optional, Dict, Set, Tuple
 
 from oplh.lexicon.opl_reader import OpLexicon
-from oplh.models.oplexicon import OplData
+from oplh.models.oplexicon import OplData, Result
 from oplh.utils import Provider, singleton
+
+MAX_INT = 0xffffffff
+BITS_IN_INT = 8 * 4
 
 
 class OplHashTable(ABC):
@@ -13,9 +17,11 @@ class OplHashTable(ABC):
         self._buckets: Dict[int, OplData] = {}
         self._hash_keys: Set[int] = set()
 
-        self._hashing()
+        time_start, time_end = self._hashing()
+        self.performance = (time_end - time_start).total_seconds()
 
-    def _hashing(self) -> None:
+    def _hashing(self) -> Tuple[datetime, datetime]:
+        start = datetime.now()
         for key in self._opl().keys:
             hash_key = self.hash_func(key)
 
@@ -25,13 +31,17 @@ class OplHashTable(ABC):
             self._buckets[hash_key] = self._opl()[key]
             self._hash_keys.add(hash_key)
 
-    def get(self, key: str) -> Optional[OplData]:
+        return start, datetime.now()
+
+    def get(self, key: str) -> Optional[Result]:
+        start = datetime.now()
         hash_key = self.hash_func(key)
 
         if hash_key not in self._hash_keys:
             return None
 
-        return self._buckets[hash_key]
+        performance = (datetime.now() - start).microseconds
+        return Result(data=self._buckets[hash_key], ms=performance)
 
     @abstractmethod
     def hash_func(self, key: str) -> int:
@@ -60,10 +70,6 @@ class ElfHashing(OplHashTable):
             result &= ~x
 
         return result
-
-
-MAX_INT = 0xffffffff
-BITS_IN_INT = 8 * 4
 
 
 class PjwHashing(OplHashTable):
@@ -96,4 +102,5 @@ if __name__ == '__main__':
     elf_hash = ElfHashing(opl)
     pjw_hash = PjwHashing(opl)
 
+    print(elf_hash.get('vulgar'))
     print(pjw_hash.get('vulgar'))

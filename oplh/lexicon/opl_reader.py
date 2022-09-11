@@ -3,7 +3,6 @@ from typing import Set
 
 from oplh.models.oplexicon import OplData, KeyTypes, InputTypes
 from oplh.settings import Config
-from oplh.utils import singleton
 
 config = Config(opl_path='/home/th3clansman/Development/projects/oplexicon-hashing/data/lexico_v3.0.txt')
 
@@ -33,4 +32,3 @@ class OpLexicon(dict):
             line = f.readline().strip()
 
         f.close()
-

@@ -25,3 +25,8 @@ class OplData(BaseModel):
     pos: KeyTypes
     pol: int
     input_type: InputTypes
+
+
+class Result(BaseModel):
+    data: OplData
+    ms: int
