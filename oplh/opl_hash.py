@@ -52,7 +52,6 @@ class OplHashTable(metaclass=ABCMeta):
     def get(self, key: str) -> Optional[Result]:
         start_time = datetime.now()
         index = self.hash_func(key) % self.table_size
-        end_time = datetime.now()
 
         bucket = self.buckets[index]
         while bucket is not None and bucket.key != key:
@@ -62,6 +61,7 @@ class OplHashTable(metaclass=ABCMeta):
         if bucket is None:
             return None
 
+        end_time = datetime.now()
         time_diff = end_time - start_time
         performance = time_diff.total_seconds() * 1000
 
