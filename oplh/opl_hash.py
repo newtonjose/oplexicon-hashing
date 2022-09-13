@@ -12,15 +12,13 @@ from oplh.models.oplexicon import OplData, Result
 from oplh.utils import Provider
 
 
-TABLE_SIZE = 42209
-
-
 class OplHashTable(metaclass=ABCMeta):
-    def __init__(self, opl: Provider[OpLexicon]):
+    def __init__(self, opl: Provider[OpLexicon], lexicons: int = 0, table_size: int = 42209):
         self._opl = opl
         self.collisions = 0
-        self.buckets: List[Optional[OplData]] = [None] * TABLE_SIZE
-        self.lexicons = len(self._opl().keys)
+        self.table_size = table_size
+        self.buckets: List[Optional[OplData]] = [None] * self.table_size
+        self.lexicons: int = lexicons if lexicons else len(self._opl().keys)
 
         time_start, time_end = self._hashing()
 
@@ -28,8 +26,9 @@ class OplHashTable(metaclass=ABCMeta):
 
     def _hashing(self) -> Tuple[datetime, datetime]:
         start = datetime.now()
+        limit = self.lexicons
         for key in self._opl().keys:
-            index = self.hash_func(key) % TABLE_SIZE
+            index = self.hash_func(key) % self.table_size
 
             bucket = self.buckets[index]
             if bucket is not None:
@@ -37,18 +36,22 @@ class OplHashTable(metaclass=ABCMeta):
 
                 while bucket is not None:
                     index += 1
-                    if index == TABLE_SIZE:
+                    if index == self.table_size:
                         index = 0
 
                     bucket = self.buckets[index]
 
             self.buckets[index] = self._opl()[key]
 
+            limit -= 1
+            if limit == 0:
+                break
+
         return start, datetime.now()
 
     def get(self, key: str) -> Optional[Result]:
         start_time = datetime.now()
-        index = self.hash_func(key) % TABLE_SIZE
+        index = self.hash_func(key) % self.table_size
         end_time = datetime.now()
 
         bucket = self.buckets[index]
@@ -73,8 +76,8 @@ class OplHashTable(metaclass=ABCMeta):
 
 
 class PjwHashing(OplHashTable):
-    def __init__(self, opl: Provider[OpLexicon]):
-        super().__init__(opl)
+    def __init__(self, opl: Provider[OpLexicon], limit):
+        super().__init__(opl, limit)
 
     def hash_func(self, key: str) -> int:
         return pjw(key)
