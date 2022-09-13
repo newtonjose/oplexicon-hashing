@@ -71,9 +71,6 @@ class OplHashTable(metaclass=ABCMeta):
     def hash_func(self, key: str) -> int:
         pass
 
-    def update(self, data):
-        pass
-
 
 class PjwHashing(OplHashTable):
     def __init__(self, opl: Provider[OpLexicon], limit):
