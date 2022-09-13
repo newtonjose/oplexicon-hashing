@@ -1,16 +1,17 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABCMeta
 from datetime import datetime
-from typing import Optional, Dict, Set, Tuple
+from typing import Optional, Dict, Set, Tuple, Union
 
+from oplh.functions.hashpy.md5 import MD5
 from oplh.lexicon.opl_reader import OpLexicon
 from oplh.models.oplexicon import OplData, Result
-from oplh.utils import Provider, singleton
+from oplh.utils import Provider
 
 MAX_INT = 0xffffffff
 BITS_IN_INT = 8 * 4
 
 
-class OplHashTable(ABC):
+class OplHashTable(metaclass=ABCMeta):
     def __init__(self, opl: Provider[OpLexicon]):
         self._opl = opl
         self.collisions = 0
@@ -44,7 +45,10 @@ class OplHashTable(ABC):
         return Result(data=self._buckets[hash_key], ms=performance)
 
     @abstractmethod
-    def hash_func(self, key: str) -> int:
+    def hash_func(self, key: str) -> Union[int, hex]:
+        pass
+
+    def update(self, data):
         pass
 
 
@@ -96,11 +100,13 @@ class PjwHashing(OplHashTable):
         return hash_value & 0x7fffffff
 
 
-if __name__ == '__main__':
-    opl = singleton(lambda: OpLexicon())
+class MD5Hashing(OplHashTable):
+    def __init__(self, opl: Provider[OpLexicon]):
+        super().__init__(opl)
 
-    elf_hash = ElfHashing(opl)
-    pjw_hash = PjwHashing(opl)
+    def hash_func(self, key: str) -> Union[int, str]:
+        assert isinstance(key, str), 'key: must be a string'
 
-    print(elf_hash.get('vulgar'))
-    print(pjw_hash.get('vulgar'))
+        md5 = MD5(key)
+
+        return md5.hexdigest
