@@ -2,9 +2,6 @@ import codecs
 from typing import Set
 
 from oplh.models.oplexicon import OplData, KeyTypes, InputTypes
-from oplh.settings import Config
-
-config = Config(opl_path='/home/th3clansman/Development/projects/oplexicon-hashing/data/lexico_v3.0.txt')
 
 
 class OpLexicon(dict):
@@ -15,7 +12,7 @@ class OpLexicon(dict):
         self._parser_file()
 
     def _parser_file(self) -> None:
-        f = codecs.open(config.opl_path, 'r', 'utf-8')
+        f = codecs.open('./data/lexico_v3.0.txt', 'r', 'utf-8')
 
         line = f.readline().strip()
         while line:
