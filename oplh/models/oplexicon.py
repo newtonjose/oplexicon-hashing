@@ -29,4 +29,4 @@ class OplData(BaseModel):
 
 class Result(BaseModel):
     data: OplData
-    ms: int
+    ms: float

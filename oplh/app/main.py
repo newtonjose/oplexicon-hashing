@@ -1,12 +1,14 @@
 from oplh.lexicon.opl_reader import OpLexicon
-from oplh.opl_hash import MD5Hashing
+from oplh.opl_hash import MD5Hashing, MD4Hashing, SHA1Hashing, SHA256Hashing, PjwHashing
 from oplh.utils import singleton
 
 if __name__ == '__main__':
     opl = singleton(lambda: OpLexicon())
 
-    md5 = MD5Hashing(opl)
+    pjw = PjwHashing(opl)
+    sh = SHA1Hashing(opl)
     # pjw_hash = PjwHashing(opl)
 
-    print(md5.get('vulgar'))
+    print(pjw.get('vulgar'))
+    print(sh.get('vulgar'))
     # print(pjw_hash.get('vulgar'))
