@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from app.core.config import config
 from oplh.lexicon.opl_reader import OpLexicon
 from oplh.models.oplexicon import Result
 from oplh.opl_hash import PjwHashing
@@ -10,6 +11,7 @@ from oplh.utils import singleton
 
 router = APIRouter()
 opl = singleton(lambda: OpLexicon())
+pjw = PjwHashing(opl, config.opl_size)
 
 
 class Response(BaseModel):
@@ -20,9 +22,7 @@ class Response(BaseModel):
 
 
 @router.get('/pjw', response_model=Response)
-def get_pjw(limit: int = 0, key: str = None):
-    pjw = PjwHashing(opl, limit)
-
+def get_pjw(key: str = None):
     if key is None:
         return Response(
             total_lexicons=pjw.lexicons,
