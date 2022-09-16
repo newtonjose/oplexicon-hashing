@@ -4,6 +4,10 @@ Simple API with classical hash function for OpLexicon (a sentiments dictionary f
 ### Setup
 `pipenv install` & `pipenv shell`
 
+### Env
+```shell
+cp .env.example .env
+```
 ### FastApi
 ```shell
 uvicorn app.main:app --reload
