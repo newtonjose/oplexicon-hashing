@@ -33,7 +33,6 @@ def get_pjw(key: str = None):
             total_lexicons=pjw.lexicons,
             total_collisions=pjw.collisions,
             performance_microseconds=pjw.performance,
-            spread_collisions=pjw.spread_collisions,
         )
 
     return Response(
@@ -51,7 +50,6 @@ def get_md4(key: str = None):
             total_lexicons=md4.lexicons,
             total_collisions=md4.collisions,
             performance_microseconds=md4.performance,
-            spread_collisions=md4.spread_collisions,
         )
 
     return Response(
@@ -69,7 +67,6 @@ def get_md5(key: str = None):
             total_lexicons=md5.lexicons,
             total_collisions=md5.collisions,
             performance_microseconds=md5.performance,
-            spread_collisions=md5.spread_collisions,
         )
 
     return Response(
@@ -87,7 +84,6 @@ def get_sha1(key: str = None):
             total_lexicons=sha1.lexicons,
             total_collisions=sha1.collisions,
             performance_microseconds=sha1.performance,
-            spread_collisions=sha1.spread_collisions,
         )
 
     return Response(
@@ -105,7 +101,6 @@ def get_sha2(key: str = None):
             total_lexicons=sha2.lexicons,
             total_collisions=sha2.collisions,
             performance_microseconds=sha2.performance,
-            spread_collisions=sha2.spread_collisions,
         )
 
     return Response(
@@ -133,4 +128,4 @@ def get_pjw_csv(algorith: str = None):
 
     with open('./data/spread_collisions.csv', 'w') as f:
         for key, val in data.items():
-            f.write("%s,%s\n" % (key, val))
+            f.write("%s;%s\n" % (key, val))
