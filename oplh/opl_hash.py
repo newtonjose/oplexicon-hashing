@@ -13,12 +13,13 @@ from oplh.utils import Provider
 
 
 class OplHashTable(metaclass=ABCMeta):
-    def __init__(self, opl: Provider[OpLexicon], lexicons: int = 0, table_size: int = 42209):
+    def __init__(self, opl: Provider[OpLexicon], lexicons: int = 0):
         self._opl = opl
         self.collisions = 0
-        self.table_size = table_size
+        self.table_size = 42209
         self.buckets: List[Optional[OplData]] = [None] * self.table_size
         self.lexicons: int = lexicons if lexicons else len(self._opl().keys)
+        self.spread_collisions = {}
 
         time_start, time_end = self._hashing()
 
@@ -33,6 +34,7 @@ class OplHashTable(metaclass=ABCMeta):
             bucket = self.buckets[index]
             if bucket is not None:
                 self.collisions += 1
+                self.spread_collisions.update({f"{index}": self.spread_collisions.get(f"{index}", 0) + 1})
 
                 while bucket is not None:
                     index += 1
@@ -81,8 +83,8 @@ class PjwHashing(OplHashTable):
 
 
 class MD5Hashing(OplHashTable):
-    def __init__(self, opl: Provider[OpLexicon]):
-        super().__init__(opl)
+    def __init__(self, opl: Provider[OpLexicon], limit):
+        super().__init__(opl, limit)
 
     def hash_func(self, key: str) -> Union[int, str]:
         assert isinstance(key, str), 'key: must be a string'
@@ -93,8 +95,8 @@ class MD5Hashing(OplHashTable):
 
 
 class MD4Hashing(OplHashTable):
-    def __init__(self, opl: Provider[OpLexicon]):
-        super().__init__(opl)
+    def __init__(self, opl: Provider[OpLexicon], limit):
+        super().__init__(opl, limit)
 
     def hash_func(self, key: str) -> Union[int, str]:
         assert isinstance(key, str), 'key: must be a string'
@@ -105,8 +107,8 @@ class MD4Hashing(OplHashTable):
 
 
 class SHA1Hashing(OplHashTable):
-    def __init__(self, opl: Provider[OpLexicon]):
-        super().__init__(opl)
+    def __init__(self, opl: Provider[OpLexicon], limit):
+        super().__init__(opl, limit)
 
     def hash_func(self, key: str) -> Union[int, str]:
         assert isinstance(key, str), 'key: must be a string'
@@ -116,8 +118,8 @@ class SHA1Hashing(OplHashTable):
 
 
 class SHA256Hashing(OplHashTable):
-    def __init__(self, opl: Provider[OpLexicon]):
-        super().__init__(opl)
+    def __init__(self, opl: Provider[OpLexicon], limit):
+        super().__init__(opl, limit)
 
     def hash_func(self, key: str) -> Union[int, str]:
         assert isinstance(key, str), 'key: must be a string'
