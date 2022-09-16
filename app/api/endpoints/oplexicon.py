@@ -126,6 +126,6 @@ def get_pjw_csv(algorith: str = None):
     else:
         data = {}
 
-    with open('./data/spread_collisions.csv', 'w') as f:
+    with open(f'./data/{algorith}_spread_collisions.csv', 'w') as f:
         for key, val in data.items():
             f.write("%s;%s\n" % (key, val))

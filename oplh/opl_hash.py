@@ -42,6 +42,8 @@ class OplHashTable(metaclass=ABCMeta):
                         index = 0
 
                     bucket = self.buckets[index]
+            else:
+                self.spread_collisions.update({f"{index}": 0})
 
             self.buckets[index] = self._opl()[key]
 
